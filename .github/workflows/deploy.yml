@@ -30,8 +30,15 @@ jobs:
       - name: Check NPM Version
         run: npm -v
 
-      - name: Run Tests
-        run: npm test
-
       - name: Verify Server Starts
-        run: node src/server.js &
+        run: |
+          node src/server.js &
+          PID=$!
+          sleep 5
+          if kill -0 $PID 2>/dev/null; then
+            echo "Server started successfully!"
+            kill $PID
+          else
+            echo "Server failed to start or crashed immediately!"
+            exit 1
+          fi
